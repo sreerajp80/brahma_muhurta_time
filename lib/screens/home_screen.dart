@@ -1,8 +1,9 @@
-// lib/screens/home_screen.dart
+// File Path: lib/screens/home_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/brahma_muhurta_provider.dart';
+import '../services/notification_service.dart';
 import '../widgets/location_card.dart';
 import '../widgets/brahma_muhurta_card.dart';
 import '../widgets/date_selector.dart';
@@ -57,10 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     SnackBar(
                       content: Text(
                         provider.notificationsEnabled
-                            ? 'Notifications enabled'
+                            ? 'Notifications enabled for 7 days in advance'
                             : 'Notifications disabled',
                       ),
-                      duration: const Duration(seconds: 2),
+                      duration: const Duration(seconds: 3),
                     ),
                   );
                 },
@@ -86,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   break;
                 case 'location_settings':
                   _showLocationSettings(context);
+                  break;
+                case 'notification_debug':
+                  _showNotificationDebug(context);
                   break;
               }
             },
@@ -119,6 +123,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListTile(
                   leading: Icon(Icons.location_on),
                   title: Text('Location Settings'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'notification_debug',
+                child: ListTile(
+                  leading: Icon(Icons.bug_report),
+                  title: Text('Notification Debug'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -444,51 +456,228 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           content: Consumer<BrahmaMuhurtaProvider>(
             builder: (context, provider, child) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SwitchListTile(
-                    title: const Text('Notifications'),
-                    subtitle: const Text(
-                      'Get notified before and during Brahma Muhurta',
-                    ),
-                    value: provider.notificationsEnabled,
-                    onChanged: (value) async {
-                      await provider.toggleNotifications();
-                      if (!context.mounted) return;
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SwitchListTile(
+                      title: const Text('Advanced Notifications'),
+                      subtitle: const Text(
+                        'Get notified for 7 days in advance',
+                      ),
+                      value: provider.notificationsEnabled,
+                      onChanged: (value) async {
+                        await provider.toggleNotifications();
+                        if (!context.mounted) return;
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            provider.notificationsEnabled
-                                ? 'Notifications enabled'
-                                : 'Notifications disabled',
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              provider.notificationsEnabled
+                                  ? 'Notifications enabled for 7 days'
+                                  : 'Notifications disabled',
+                            ),
+                            duration: const Duration(seconds: 3),
                           ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    secondary: Icon(
-                      provider.notificationsEnabled
-                          ? Icons.notifications_active
-                          : Icons.notifications_off,
-                      color: Theme.of(context).colorScheme.primary,
+                        );
+                      },
+                      secondary: Icon(
+                        provider.notificationsEnabled
+                            ? Icons.notifications_active
+                            : Icons.notifications_off,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      contentPadding: EdgeInsets.zero,
                     ),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  const SizedBox(height: 16),
-                  // Additional settings can be added here in future
-                  Text(
-                    'More settings coming soon...',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.5),
-                          fontStyle: FontStyle.italic,
+                    const SizedBox(height: 16),
+
+                    // Test Notification Section
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: provider.notificationsEnabled
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withOpacity(0.3)
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceVariant
+                                .withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: provider.notificationsEnabled
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.3)
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.1),
                         ),
-                  ),
-                ],
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Test Notifications',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: provider.notificationsEnabled
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Check if notifications are working properly',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: provider.notificationsEnabled
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.4),
+                                    ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: provider.notificationsEnabled
+                                ? () async {
+                                    final notificationService =
+                                        NotificationService();
+                                    await notificationService
+                                        .testNotification();
+
+                                    if (!context.mounted) return;
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Test notification sent! Check your notification panel.',
+                                        ),
+                                        duration: Duration(seconds: 3),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            icon: Icon(
+                              Icons.notifications_active,
+                              size: 20,
+                            ),
+                            label: const Text('Send Test Notification'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: provider.notificationsEnabled
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                              foregroundColor: provider.notificationsEnabled
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ),
+                          if (!provider.notificationsEnabled)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                'Enable notifications to test',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Force Reschedule Button (for debugging)
+                    if (provider.notificationsEnabled)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            await provider.forceRescheduleNotifications();
+                            if (!context.mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Notifications rescheduled for next 7 days'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: const Text('Reschedule All Notifications'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 16),
+
+                    // Info text
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceVariant
+                            .withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 16,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Advanced notifications schedule alerts for the next 7 days automatically, even when the app is closed.',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -507,6 +696,103 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const LocationSettingsScreen(),
+      ),
+    );
+  }
+
+  void _showNotificationDebug(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                Icons.bug_report,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              const Text('Notification Debug'),
+            ],
+          ),
+          content: Consumer<BrahmaMuhurtaProvider>(
+            builder: (context, provider, child) {
+              return SizedBox(
+                width: double.maxFinite,
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: provider.getNotificationStatus(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final status = snapshot.data ?? {};
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildDebugItem('Notifications Enabled',
+                              provider.notificationsEnabled ? 'Yes' : 'No'),
+                          _buildDebugItem(
+                              'Total Pending', '${status['total'] ?? 0}'),
+                          _buildDebugItem('Reminder Notifications',
+                              '${status['reminders'] ?? 0}'),
+                          _buildDebugItem('Start Notifications',
+                              '${status['starts'] ?? 0}'),
+                          _buildDebugItem('Next Notification ID',
+                              '${status['nextNotification'] ?? 'None'}'),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await provider.forceRescheduleNotifications();
+                              if (!context.mounted) return;
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Debug: Notifications rescheduled'),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Force Reschedule'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDebugItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontFamily: 'monospace'),
+          ),
+        ],
       ),
     );
   }

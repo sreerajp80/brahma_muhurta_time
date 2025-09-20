@@ -44,23 +44,24 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
   Future<void> initialize() async {
     _setLoading(true);
 
-    // Load saved locations
+    // Load saved locations and notifications setting
     await loadSavedLocations();
+    _notificationsEnabled = await StorageService.getNotificationsEnabled();
 
     // Check last used mode and location
     final mode = await StorageService.getLocationMode();
     final lastUsed = await StorageService.getLastUsedLocation();
 
     if (mode == StorageService.MODE_SAVED && lastUsed != null) {
-      // Use last saved location
       await selectSavedLocation(lastUsed);
     } else if (_savedLocations.isEmpty || mode == StorageService.MODE_LIVE) {
-      // Use live location if no saved locations or mode is live
       await useLiveLocation();
     } else if (_savedLocations.isNotEmpty) {
-      // Use the first saved location as default
       await selectSavedLocation(_savedLocations.first);
     }
+
+    // Check and reschedule notifications if needed
+    await checkAndRescheduleNotifications();
 
     _setLoading(false);
   }
@@ -91,7 +92,6 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
       bool serviceEnabled = await _locationService.isLocationServiceEnabled();
       if (!serviceEnabled) {
         _setError('Location services are disabled. Please enable GPS.');
-        // Try to open location settings
         await _locationService.openLocationSettings();
         return;
       }
@@ -106,8 +106,13 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
       _currentLocation = locationData;
       await StorageService.setLocationMode(StorageService.MODE_LIVE);
 
-      // Calculate Brahma Muhurta  for selected date
+      // Calculate Brahma Muhurta for selected date
       await _calculateBrahmaMuhurtaForDate();
+
+      // Schedule advanced notifications if enabled
+      if (_notificationsEnabled) {
+        await _scheduleAdvancedNotifications();
+      }
     } catch (e) {
       _setError('Error getting location: ${e.toString()}');
     } finally {
@@ -129,6 +134,11 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
     await StorageService.setLocationMode(StorageService.MODE_SAVED);
 
     await _calculateBrahmaMuhurtaForDate();
+
+    // Schedule advanced notifications if enabled
+    if (_notificationsEnabled) {
+      await _scheduleAdvancedNotifications();
+    }
   }
 
   /// Save current location with a name
@@ -203,41 +213,93 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
         date: _selectedDate,
       );
 
-      // Only schedule notifications if it's today or future
-      if (_notificationsEnabled &&
-          _brahmaMuhurta != null &&
-          DateUtils.isSameDay(_selectedDate, DateTime.now())) {
-        await _scheduleNotifications();
-      }
-
       notifyListeners();
     } catch (e) {
       _setError('Error calculating Brahma Muhurta: ${e.toString()}');
     }
   }
 
-  /// Schedule notifications  for Brahma Muhurta
+  /// Schedule notifications for multiple days in advance
+  Future<void> _scheduleAdvancedNotifications() async {
+    if (_currentLocation == null || !_notificationsEnabled) return;
+
+    try {
+      await _notificationService.scheduleNotificationsAdvanced(
+        latitude: _currentLocation!.latitude,
+        longitude: _currentLocation!.longitude,
+        daysInAdvance: 7, // Schedule for next 7 days
+      );
+
+      // Store the last scheduled date to avoid duplicate scheduling
+      await StorageService.setLastNotificationScheduleDate(DateTime.now());
+
+      AppLogger.info(
+          'Advanced notifications scheduled', 'BrahmaMuhurtaProvider');
+    } catch (e) {
+      AppLogger.error('Error scheduling advanced notifications', e,
+          'BrahmaMuhurtaProvider');
+    }
+  }
+
+  /// Check if we need to reschedule notifications (call this during app initialization)
+  Future<void> checkAndRescheduleNotifications() async {
+    if (!_notificationsEnabled || _currentLocation == null) return;
+
+    try {
+      // Get the last time we scheduled notifications
+      final lastScheduled =
+          await StorageService.getLastNotificationScheduleDate();
+      final now = DateTime.now();
+
+      // If we haven't scheduled in the last 3 days, reschedule
+      bool shouldReschedule = false;
+
+      if (lastScheduled == null) {
+        shouldReschedule = true;
+      } else {
+        final daysSinceLastSchedule = now.difference(lastScheduled).inDays;
+        shouldReschedule = daysSinceLastSchedule >= 3;
+      }
+
+      if (shouldReschedule) {
+        AppLogger.info(
+            'Rescheduling notifications - last scheduled: $lastScheduled',
+            'BrahmaMuhurtaProvider');
+        await _scheduleAdvancedNotifications();
+      }
+
+      // Also check current notification status
+      final status = await _notificationService.getNotificationStatus();
+      AppLogger.info(
+          'Notification status: ${status.toString()}', 'BrahmaMuhurtaProvider');
+    } catch (e) {
+      AppLogger.error(
+          'Error checking notification schedule', e, 'BrahmaMuhurtaProvider');
+    }
+  }
+
+  /// Legacy method for single day notifications (still used for selected date changes)
   Future<void> _scheduleNotifications() async {
     if (_brahmaMuhurta == null) return;
 
     try {
       await _notificationService.scheduleNotifications(_brahmaMuhurta!);
     } catch (e) {
-      AppLogger.error(
-          'Error scheduling notifications', e, 'BrahmaMuhurtaProvider');
-      // Don't show error to user as this is not critical
+      AppLogger.error('Error scheduling single day notifications', e,
+          'BrahmaMuhurtaProvider');
     }
   }
 
   /// Toggle notifications
   Future<void> toggleNotifications() async {
     _notificationsEnabled = !_notificationsEnabled;
+    await StorageService.setNotificationsEnabled(_notificationsEnabled);
 
-    if (_notificationsEnabled &&
-        _brahmaMuhurta != null &&
-        DateUtils.isSameDay(_selectedDate, DateTime.now())) {
-      await _scheduleNotifications();
-    } else if (!_notificationsEnabled) {
+    if (_notificationsEnabled) {
+      // Schedule advanced notifications when enabling
+      await _scheduleAdvancedNotifications();
+    } else {
+      // Cancel all when disabling
       await _notificationService.cancelAllNotifications();
     }
 
@@ -284,6 +346,18 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
       return getTimeUntilNext();
     } else {
       return 'Session time: ${_brahmaMuhurta!.startTime} - ${_brahmaMuhurta!.endTime}';
+    }
+  }
+
+  /// Get notification status for debugging
+  Future<Map<String, dynamic>> getNotificationStatus() async {
+    return await _notificationService.getNotificationStatus();
+  }
+
+  /// Force reschedule notifications (for manual testing)
+  Future<void> forceRescheduleNotifications() async {
+    if (_currentLocation != null) {
+      await _scheduleAdvancedNotifications();
     }
   }
 

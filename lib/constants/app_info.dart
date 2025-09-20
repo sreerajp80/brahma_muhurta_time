@@ -2,7 +2,7 @@
 
 class AppInfo {
   static const String appName = 'Brahma Muhurta Calculator';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.5.1';
   static const String conceptAndDesign = 'Sreeraj P';
   static const String aiUsed = 'Claude Sonnet 4';
   static const String ide = 'Visual Studio Code';
@@ -10,7 +10,7 @@ class AppInfo {
   // Build date can be set during CI/CD or manually updated
   static String get buildDate {
     // You can replace this with actual build date from your CI/CD
-    return '19th September 2025';
+    return '20th September 2025';
   }
 
   // Additional app information

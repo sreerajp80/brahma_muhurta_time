@@ -14,6 +14,11 @@ class StorageService {
   static const String MODE_LIVE = 'live';
   static const String MODE_SAVED = 'saved';
 
+  // New constants for notification management
+  static const String _notificationsEnabledKey = 'notifications_enabled';
+  static const String _lastNotificationScheduleDateKey =
+      'last_notification_schedule_date';
+
   /// Save locations to storage
   static Future<void> saveLocations(List<SavedLocation> locations) async {
     final prefs = await SharedPreferences.getInstance();
@@ -106,5 +111,69 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_savedLocationsKey);
     await prefs.remove(_lastUsedLocationKey);
+  }
+
+  /// Get notifications enabled status
+  static Future<bool> getNotificationsEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_notificationsEnabledKey) ??
+          true; // Default to enabled
+    } catch (e) {
+      return true; // Default fallback
+    }
+  }
+
+  /// Set notifications enabled status
+  static Future<void> setNotificationsEnabled(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_notificationsEnabledKey, enabled);
+    } catch (e) {
+      // Log error but don't throw - this is not critical
+      print('Error saving notifications enabled status: $e');
+    }
+  }
+
+  /// Get last notification schedule date
+  static Future<DateTime?> getLastNotificationScheduleDate() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final dateString = prefs.getString(_lastNotificationScheduleDateKey);
+      return dateString != null ? DateTime.parse(dateString) : null;
+    } catch (e) {
+      return null; // Return null if parsing fails
+    }
+  }
+
+  /// Set last notification schedule date
+  static Future<void> setLastNotificationScheduleDate(DateTime date) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          _lastNotificationScheduleDateKey, date.toIso8601String());
+    } catch (e) {
+      // Log error but don't throw - this is not critical
+      print('Error saving last notification schedule date: $e');
+    }
+  }
+
+  /// Clear all notification-related data (useful for debugging)
+  static Future<void> clearNotificationData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_lastNotificationScheduleDateKey);
+      await prefs.remove(_notificationsEnabledKey);
+    } catch (e) {
+      print('Error clearing notification data: $e');
+    }
+  }
+
+  /// Get all notification-related settings (for debugging)
+  static Future<Map<String, dynamic>> getNotificationSettings() async {
+    return {
+      'enabled': await getNotificationsEnabled(),
+      'lastScheduled': await getLastNotificationScheduleDate(),
+    };
   }
 }
