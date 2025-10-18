@@ -1,3 +1,9 @@
+// File Path: brahma_muhurta_time/lib/models/brahma_muhurta_time.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified:
+// Description: Model classes for Brahma Muhurta time calculations and location data.
+
 class BrahmaMuhurtaTime {
   final String startTime;
   final String endTime;

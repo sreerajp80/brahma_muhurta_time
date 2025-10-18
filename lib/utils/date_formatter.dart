@@ -1,4 +1,8 @@
-// File Path: lib/utils/date_formatter.dart
+// File Path: brahma_muhurta_time/lib/utils/date_formatter.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Utility class for formatting dates and timestamps.
 
 import 'package:intl/intl.dart';
 

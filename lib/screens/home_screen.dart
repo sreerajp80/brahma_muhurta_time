@@ -1,4 +1,8 @@
-// File Path: lib/screens/home_screen.dart
+// File Path: brahma_muhurta_time/lib/screens/home_screen.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Home screen of the Brahma Muhurta Time app.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,10 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       : Icons.notifications_off,
                 ),
                 onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
                   await provider.toggleNotifications();
-                  if (!mounted) return;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     SnackBar(
                       content: Text(
                         provider.notificationsEnabled
@@ -74,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.menu),
             onSelected: (String value) {
-              // Handle menu selection
               switch (value) {
                 case 'about_brahma':
                   _showAboutBrahmaMuhurta(context);
@@ -192,10 +195,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
                         final hasPermission =
                             await provider.hasLocationPermission();
                         if (!hasPermission && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             const SnackBar(
                               content: Text(
                                 'Please enable location permissions in settings',
@@ -232,27 +236,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Date Selector
                     const DateSelector(),
-
                     const SizedBox(height: 16),
-
-                    // Brahma Muhurta Card
                     BrahmaMuhurtaCard(
                       brahmaMuhurta: provider.brahmaMuhurta!,
                       isActive: provider.isCurrentlyActive,
                       isToday: provider.isToday,
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Location Card
                     LocationCard(
                       location: provider.location,
                       isLoading: provider.isLoading,
                       onRefresh: () => provider.refreshLocation(),
                     ),
-
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -321,13 +317,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .primaryContainer
-                        .withOpacity(0.3),
+                        .withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(0.2),
+                          .withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -412,7 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
               Divider(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.2),
               ),
               const SizedBox(height: 8),
               Center(
@@ -422,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.6),
+                            .withValues(alpha: 0.6),
                       ),
                 ),
               ),
@@ -467,10 +466,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       value: provider.notificationsEnabled,
                       onChanged: (value) async {
+                        final messenger = ScaffoldMessenger.of(context);
                         await provider.toggleNotifications();
-                        if (!context.mounted) return;
 
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messenger.showSnackBar(
                           SnackBar(
                             content: Text(
                               provider.notificationsEnabled
@@ -490,8 +489,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 16),
-
-                    // Test Notification Section
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -500,22 +497,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? Theme.of(context)
                                 .colorScheme
                                 .primaryContainer
-                                .withOpacity(0.3)
+                                .withValues(alpha: 0.3)
                             : Theme.of(context)
                                 .colorScheme
-                                .surfaceVariant
-                                .withOpacity(0.3),
+                                .surfaceContainerHighest
+                                .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: provider.notificationsEnabled
                               ? Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withOpacity(0.3)
+                                  .withValues(alpha: 0.3)
                               : Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(
@@ -534,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       : Theme.of(context)
                                           .colorScheme
                                           .onSurface
-                                          .withOpacity(0.5),
+                                          .withValues(alpha: 0.5),
                                 ),
                           ),
                           const SizedBox(height: 8),
@@ -549,45 +546,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                           : Theme.of(context)
                                               .colorScheme
                                               .onSurface
-                                              .withOpacity(0.4),
+                                              .withValues(alpha: 0.4),
                                     ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 12),
-                          ElevatedButton.icon(
-                            onPressed: provider.notificationsEnabled
-                                ? () async {
-                                    final notificationService =
-                                        NotificationService();
-                                    await notificationService
-                                        .testNotification();
+                          Builder(
+                            builder: (btnContext) {
+                              return ElevatedButton.icon(
+                                onPressed: provider.notificationsEnabled
+                                    ? () async {
+                                        final messenger =
+                                            ScaffoldMessenger.of(btnContext);
+                                        final notificationService =
+                                            NotificationService();
+                                        await notificationService
+                                            .testNotification();
 
-                                    if (!context.mounted) return;
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Test notification sent! Check your notification panel.',
-                                        ),
-                                        duration: Duration(seconds: 3),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  }
-                                : null,
-                            icon: Icon(
-                              Icons.notifications_active,
-                              size: 20,
-                            ),
-                            label: const Text('Send Test Notification'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: provider.notificationsEnabled
-                                  ? Theme.of(context).colorScheme.primary
-                                  : null,
-                              foregroundColor: provider.notificationsEnabled
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : null,
-                            ),
+                                        messenger.showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Test notification sent! Check your notification panel.',
+                                            ),
+                                            duration: Duration(seconds: 3),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                icon: const Icon(
+                                  Icons.notifications_active,
+                                  size: 20,
+                                ),
+                                label: const Text('Send Test Notification'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: provider.notificationsEnabled
+                                      ? Theme.of(btnContext).colorScheme.primary
+                                      : null,
+                                  foregroundColor: provider.notificationsEnabled
+                                      ? Theme.of(btnContext)
+                                          .colorScheme
+                                          .onPrimary
+                                      : null,
+                                ),
+                              );
+                            },
                           ),
                           if (!provider.notificationsEnabled)
                             Padding(
@@ -607,20 +610,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Force Reschedule Button (for debugging)
                     if (provider.notificationsEnabled)
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         child: ElevatedButton.icon(
                           onPressed: () async {
+                            final messenger = ScaffoldMessenger.of(context);
                             await provider.forceRescheduleNotifications();
-                            if (!context.mounted) return;
 
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               const SnackBar(
                                 content: Text(
                                     'Notifications rescheduled for next 7 days'),
@@ -638,17 +638,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-
                     const SizedBox(height: 16),
-
-                    // Info text
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Theme.of(context)
                             .colorScheme
-                            .surfaceVariant
-                            .withOpacity(0.3),
+                            .surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -746,10 +743,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
                             onPressed: () async {
+                              final navigator = Navigator.of(context);
+                              final messenger = ScaffoldMessenger.of(context);
                               await provider.forceRescheduleNotifications();
-                              if (!context.mounted) return;
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
+
+                              navigator.pop();
+                              messenger.showSnackBar(
                                 const SnackBar(
                                   content:
                                       Text('Debug: Notifications rescheduled'),
@@ -808,7 +807,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Icon(
           icon,
           size: 20,
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -821,7 +820,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                     ),
               ),
               const SizedBox(height: 2),

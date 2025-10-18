@@ -1,8 +1,12 @@
-// lib/constants/app_info.dart
+// File: brahma_muhurta_time/lib/constants/app_info.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 october 18
+// Description: Contains application information constants.
 
 class AppInfo {
   static const String appName = 'Brahma Muhurta Calculator';
-  static const String appVersion = '1.5.1';
+  static const String appVersion = '1.5.3';
   static const String conceptAndDesign = 'Sreeraj P';
   static const String aiUsed = 'Claude Sonnet 4';
   static const String ide = 'Visual Studio Code';

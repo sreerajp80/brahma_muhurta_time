@@ -1,3 +1,9 @@
+// File Path: brahma_muhurta_time/lib/widgets/info_card.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Info card widget displaying details about Brahma Muhurta.
+
 import 'package:flutter/material.dart';
 
 class InfoCard extends StatelessWidget {
@@ -23,53 +29,64 @@ class InfoCard extends StatelessWidget {
                 Text(
                   'About Brahma Muhurta',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Main description
             Text(
               'Brahma Muhurta is considered the most auspicious time for spiritual practices, meditation, and study. It occurs during the last 96 minutes before sunrise when the atmosphere is serene and conducive to inner growth.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                height: 1.5,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-              ),
+                    height: 1.5,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.8),
+                  ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Benefits section
             _InfoSection(
               icon: Icons.psychology_outlined,
               title: 'Benefits',
-              content: 'Enhanced focus, spiritual awareness, peaceful mind, and optimal mental clarity.',
+              content:
+                  'Enhanced focus, spiritual awareness, peaceful mind, and optimal mental clarity.',
               color: Theme.of(context).colorScheme.secondary,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Best practices section
             _InfoSection(
               icon: Icons.lightbulb_outline,
               title: 'Best Practices',
-              content: 'Wake up naturally, practice meditation, read spiritual texts, or engage in quiet reflection.',
+              content:
+                  'Wake up naturally, practice meditation, read spiritual texts, or engage in quiet reflection.',
               color: Theme.of(context).colorScheme.tertiary,
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Timing note
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -84,9 +101,11 @@ class InfoCard extends StatelessWidget {
                     child: Text(
                       'The timing is calculated based on your exact location and changes daily with the sunrise.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontStyle: FontStyle.italic,
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
                   ),
                 ],
@@ -120,7 +139,7 @@ class _InfoSection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -137,17 +156,20 @@ class _InfoSection extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
                 content,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  height: 1.4,
-                ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.7),
+                      height: 1.4,
+                    ),
               ),
             ],
           ),

@@ -1,6 +1,8 @@
-// File Path: lib/models/saved_location.dart
-
-import 'dart:convert';
+// File Path: brahma_muhurta_time/lib/models/saved_location.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Model class for saved locations in the Brahma Muhurta Time app.
 
 class SavedLocation {
   final String id;

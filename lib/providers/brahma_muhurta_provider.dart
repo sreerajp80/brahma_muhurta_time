@@ -1,4 +1,8 @@
-// File Path: lib/providers/brahma_muhurta_provider.dart
+// File Path: brahma_muhurta_time/lib/providers/brahma_muhurta_provider.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Provider for managing Brahma Muhurta calculations, locations, and notifications.
 
 import 'package:flutter/material.dart';
 import '../models/brahma_muhurta_time.dart';
@@ -52,9 +56,9 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
     final mode = await StorageService.getLocationMode();
     final lastUsed = await StorageService.getLastUsedLocation();
 
-    if (mode == StorageService.MODE_SAVED && lastUsed != null) {
+    if (mode == StorageService.modeSaved && lastUsed != null) {
       await selectSavedLocation(lastUsed);
-    } else if (_savedLocations.isEmpty || mode == StorageService.MODE_LIVE) {
+    } else if (_savedLocations.isEmpty || mode == StorageService.modeLive) {
       await useLiveLocation();
     } else if (_savedLocations.isNotEmpty) {
       await selectSavedLocation(_savedLocations.first);
@@ -104,7 +108,7 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
       }
 
       _currentLocation = locationData;
-      await StorageService.setLocationMode(StorageService.MODE_LIVE);
+      await StorageService.setLocationMode(StorageService.modeLive);
 
       // Calculate Brahma Muhurta for selected date
       await _calculateBrahmaMuhurtaForDate();
@@ -131,7 +135,7 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
     _usingLiveLocation = false;
 
     await StorageService.setLastUsedLocation(location);
-    await StorageService.setLocationMode(StorageService.MODE_SAVED);
+    await StorageService.setLocationMode(StorageService.modeSaved);
 
     await _calculateBrahmaMuhurtaForDate();
 
@@ -279,7 +283,7 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
   }
 
   /// Legacy method for single day notifications (still used for selected date changes)
-  Future<void> _scheduleNotifications() async {
+  /*Future<void> _scheduleNotifications() async {
     if (_brahmaMuhurta == null) return;
 
     try {
@@ -288,7 +292,7 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
       AppLogger.error('Error scheduling single day notifications', e,
           'BrahmaMuhurtaProvider');
     }
-  }
+  }*/
 
   /// Toggle notifications
   Future<void> toggleNotifications() async {
@@ -376,8 +380,8 @@ class BrahmaMuhurtaProvider extends ChangeNotifier {
     _errorMessage = null;
   }
 
-  @override
+  /*@override
   void dispose() {
     super.dispose();
-  }
+  }*/
 }

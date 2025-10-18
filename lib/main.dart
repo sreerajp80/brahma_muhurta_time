@@ -1,4 +1,8 @@
-// File Path: lib/main.dart
+// File Path: brahma_muhurta_time/lib/main.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Main entry point for the Brahma Muhurta app.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

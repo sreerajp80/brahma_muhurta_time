@@ -3,7 +3,7 @@
 name: brahma_muhurta
 description: A Flutter app to calculate Brahma Muhurta times based on your location.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.5.3+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -29,10 +29,15 @@ dependencies:
   # State Management
   provider: ^6.1.1
 
+  path_provider: ^2.1.1
+  path: ^1.8.3
+
   # Date/Time utilities
   intl: ^0.20.2
 
   shared_preferences: ^2.2.2
+
+  file_picker: ^8.1.4
 
 dev_dependencies:
   flutter_test:

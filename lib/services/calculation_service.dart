@@ -1,4 +1,8 @@
-// File Path: lib/services/calculation_service.dart
+// File Path: brahma_muhurta_time/lib/services/calculation_service.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Service class for calculating Brahma Muhurta times based on location and date.
 
 import 'dart:math';
 import 'package:intl/intl.dart';
@@ -8,7 +12,7 @@ import '../models/brahma_muhurta_time.dart';
 import '../services/app_logger.dart';
 
 class CalculationService {
-  static const int _brahmaMuhurtaDurationMinutes = 48;
+  //static const int _brahmaMuhurtaDurationMinutes = 48;
   static bool _timezoneInitialized = false;
 
   /// Initialize timezone database (call this once in your app initialization)

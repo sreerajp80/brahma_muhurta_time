@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <files-path name="app_sounds" path="sounds/" />
+    <files-path name="files" path="." />
+    <external-files-path name="external_sounds" path="sounds/" />
+</paths>

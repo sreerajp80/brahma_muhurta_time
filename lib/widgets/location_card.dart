@@ -1,3 +1,9 @@
+// File Path: brahma_muhurta_time/lib/widgets/location_card.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Widget to display the current location information in the Brahma Muhurta Time app
+
 import 'package:flutter/material.dart';
 import '../models/brahma_muhurta_time.dart';
 import '../utils/date_formatter.dart';
@@ -76,7 +82,7 @@ class LocationCard extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                         ),
                   ),
                 ],
@@ -87,7 +93,10 @@ class LocationCard extends StatelessWidget {
                   Icon(
                     Icons.location_off,
                     size: 48,
-                    color: Theme.of(context).colorScheme.error.withOpacity(0.6),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .error
+                        .withValues(alpha: 0.6),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -102,7 +111,7 @@ class LocationCard extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                         ),
                     textAlign: TextAlign.center,
                   ),

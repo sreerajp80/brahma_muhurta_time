@@ -1,4 +1,8 @@
-// File Path: lib/services/app_logger.dart
+// File Path: brahma_muhurta_time/lib/services/app_logger.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified:
+// Description: A simple logging utility for the Brahma Muhurta app.
 
 import 'package:flutter/foundation.dart';
 

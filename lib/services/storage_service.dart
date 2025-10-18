@@ -1,4 +1,8 @@
-// File Path: lib/services/storage_service.dart
+// File Path: brahma_muhurta_time/lib/services/storage_service.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 october 18
+// Description: Service to manage storage of saved locations and notification settings.
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,8 +15,8 @@ class StorageService {
   static const String _useLocationModeKey = 'use_location_mode';
 
   // Location modes
-  static const String MODE_LIVE = 'live';
-  static const String MODE_SAVED = 'saved';
+  static const String modeLive = 'live';
+  static const String modeSaved = 'saved';
 
   // New constants for notification management
   static const String _notificationsEnabledKey = 'notifications_enabled';
@@ -103,7 +107,7 @@ class StorageService {
   /// Get location mode
   static Future<String> getLocationMode() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_useLocationModeKey) ?? MODE_LIVE;
+    return prefs.getString(_useLocationModeKey) ?? modeLive;
   }
 
   /// Clear all saved locations
@@ -130,8 +134,8 @@ class StorageService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_notificationsEnabledKey, enabled);
     } catch (e) {
-      // Log error but don't throw - this is not critical
-      print('Error saving notifications enabled status: $e');
+      AppLogger.error(
+          'Error saving notifications enabled status', e, 'StorageService');
     }
   }
 
@@ -153,8 +157,8 @@ class StorageService {
       await prefs.setString(
           _lastNotificationScheduleDateKey, date.toIso8601String());
     } catch (e) {
-      // Log error but don't throw - this is not critical
-      print('Error saving last notification schedule date: $e');
+      AppLogger.error(
+          'Error saving last notification schedule date', e, 'StorageService');
     }
   }
 
@@ -165,7 +169,7 @@ class StorageService {
       await prefs.remove(_lastNotificationScheduleDateKey);
       await prefs.remove(_notificationsEnabledKey);
     } catch (e) {
-      print('Error clearing notification data: $e');
+      AppLogger.error('Error clearing notification data', e, 'StorageService');
     }
   }
 
@@ -175,5 +179,50 @@ class StorageService {
       'enabled': await getNotificationsEnabled(),
       'lastScheduled': await getLastNotificationScheduleDate(),
     };
+  }
+
+  /// Generic method to save a string value
+  static Future<void> saveString(String key, String value) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, value);
+      AppLogger.debug('Saved string for key: $key', 'StorageService');
+    } catch (e) {
+      AppLogger.error('Error saving string for key: $key', e, 'StorageService');
+    }
+  }
+
+  /// Generic method to get a string value
+  static Future<String?> getString(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(key);
+    } catch (e) {
+      AppLogger.error(
+          'Error getting string for key: $key', e, 'StorageService');
+      return null;
+    }
+  }
+
+  /// Generic method to remove a value
+  static Future<void> remove(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+      AppLogger.debug('Removed key: $key', 'StorageService');
+    } catch (e) {
+      AppLogger.error('Error removing key: $key', e, 'StorageService');
+    }
+  }
+
+  /// Check if a key exists
+  static Future<bool> containsKey(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.containsKey(key);
+    } catch (e) {
+      AppLogger.error('Error checking key: $key', e, 'StorageService');
+      return false;
+    }
   }
 }

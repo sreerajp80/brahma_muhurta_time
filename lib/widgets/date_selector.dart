@@ -1,4 +1,8 @@
-// File Path: lib/widgets/date_selector.dart
+// File Path: brahma_muhurta_time/lib/widgets/date_selector.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: A widget that allows users to select and navigate dates.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +21,10 @@ class DateSelector extends StatelessWidget {
 
         return Card(
           elevation: 2,
-          color:
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+          color: Theme.of(context)
+              .colorScheme
+              .primaryContainer
+              .withValues(alpha: 0.5),
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -50,7 +56,7 @@ class DateSelector extends StatelessWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .onPrimaryContainer
-                                  .withOpacity(0.8),
+                                  .withValues(alpha: 0.8),
                             ),
                       ),
                     ],
@@ -79,7 +85,7 @@ class DateSelector extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                     ),
                     IconButton(
@@ -89,7 +95,7 @@ class DateSelector extends StatelessWidget {
                             ? Theme.of(context)
                                 .colorScheme
                                 .primary
-                                .withOpacity(0.5)
+                                .withValues(alpha: 0.5)
                             : Theme.of(context).colorScheme.primary,
                       ),
                       onPressed: isToday
@@ -107,7 +113,7 @@ class DateSelector extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .primary
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                     ),
                     IconButton(

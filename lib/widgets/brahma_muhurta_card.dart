@@ -1,3 +1,9 @@
+// File Path: brahma_muhurta_time/lib/widgets/brahma_muhurta_card.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Widget to display Brahma Muhurta time information in a card format.
+
 import 'package:flutter/material.dart';
 import '../models/brahma_muhurta_time.dart';
 import '../services/calculation_service.dart';
@@ -99,7 +105,10 @@ class BrahmaMuhurtaCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surface
+                    .withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -114,7 +123,7 @@ class BrahmaMuhurtaCard extends StatelessWidget {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.7),
+                                .withValues(alpha: 0.7),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -138,7 +147,7 @@ class BrahmaMuhurtaCard extends StatelessWidget {
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.2),
+                            .withValues(alpha: 0.2),
                       ),
                       Column(
                         children: [
@@ -180,7 +189,7 @@ class BrahmaMuhurtaCard extends StatelessWidget {
                           : Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                       fontWeight:
                           isActive ? FontWeight.w600 : FontWeight.normal,
                     ),
@@ -195,8 +204,8 @@ class BrahmaMuhurtaCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
-                      .surfaceVariant
-                      .withOpacity(0.5),
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -271,10 +280,10 @@ class _TimeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 2,
         ),
       ),

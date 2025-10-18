@@ -1,4 +1,8 @@
-// File Path: lib/services/location_service.dart
+// File Path: brahma_muhurta_time/lib/services/location_service.dart
+// Author: Sreeraj P
+// Created:
+// Last Modified: 2025 October 18
+// Description: Service to handle location permissions and fetch current location.
 
 import 'package:geolocator/geolocator.dart';
 import '../models/brahma_muhurta_time.dart';
